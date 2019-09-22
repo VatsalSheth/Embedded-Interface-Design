@@ -76,7 +76,21 @@ class Ui(QtWidgets.QMainWindow):
         self.label_temp = self.findChild(QtWidgets.QLabel, 'label_temp') 
         self.label_humidity = self.findChild(QtWidgets.QLabel, 'label_humidity') 
         self.label_time = self.findChild(QtWidgets.QLabel, 'label_time') 
+        self.alert_temp = self.findChild(QtWidgets.QLabel, 'alert_temp')
+        self.slide_temp = self.findChild(QtWidgets.QSlider, 'slide_temp')
+        self.slide_temp.valueChanged.connect(self.update_temp_slider)
+        self.update_temp_slider()
+        self.alert_humidity = self.findChild(QtWidgets.QLabel, 'alert_humidity')
+        self.slide_humidity = self.findChild(QtWidgets.QSlider, 'slide_humidity')
+        self.slide_humidity.valueChanged.connect(self.update_humidity_slider)
+        self.update_humidity_slider()
         self.show() # Show the GUI
+        
+    def update_temp_slider(self):
+        self.alert_temp.setText("{}".format(self.slide_temp.value()))
+        
+    def update_humidity_slider(self):
+        self.alert_humidity.setText("{}".format(self.slide_humidity.value()))
     
     def refresh_data(self):
         #humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
