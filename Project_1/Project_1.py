@@ -6,7 +6,7 @@ Description: This code is used to store the DHT22 sensor readings in a MySQL dat
 Date: 09/23/2019
 References: https://www.w3schools.com/python/python_mysql_getstarted.asp
             https://pimylifeup.com/raspberry-pi-humidity-sensor-dht22/ 
-	        https://pypi.org/project/multitimer/
+        https://pypi.org/project/multitimer/
             https://matplotlib.org/
 """
 
