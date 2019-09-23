@@ -58,7 +58,7 @@
      <rect>
       <x>210</x>
       <y>70</y>
-      <width>68</width>
+      <width>91</width>
       <height>22</height>
      </rect>
     </property>
@@ -89,7 +89,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Temperature (*C):</string>
+     <string>Temperature:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -137,7 +137,7 @@
      </rect>
     </property>
     <property name="maximum">
-     <number>60</number>
+     <number>140</number>
     </property>
     <property name="value">
      <number>25</number>
@@ -149,7 +149,7 @@
      <enum>QSlider::TicksAbove</enum>
     </property>
     <property name="tickInterval">
-     <number>5</number>
+     <number>10</number>
     </property>
    </widget>
    <widget class="QSlider" name="slide_humidity">
@@ -272,7 +272,7 @@
      <rect>
       <x>820</x>
       <y>60</y>
-      <width>68</width>
+      <width>101</width>
       <height>22</height>
      </rect>
     </property>
@@ -290,7 +290,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Temperature (*C):</string>
+     <string>Temperature:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_humidity_i">
@@ -367,27 +367,27 @@
    <widget class="QLabel" name="alert_temp">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>360</x>
       <y>490</y>
       <width>81</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Slider Value</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="alert_humidity">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>590</x>
       <y>490</y>
       <width>81</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Slider Value</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_12">
@@ -409,7 +409,7 @@
      <string>Units</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="radioButton">
+   <widget class="QRadioButton" name="radioButton_f">
     <property name="geometry">
      <rect>
       <x>890</x>
@@ -422,7 +422,7 @@
      <string>Fahrenheit</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="radioButton_2">
+   <widget class="QRadioButton" name="radioButton_c">
     <property name="geometry">
      <rect>
       <x>890</x>
@@ -433,6 +433,9 @@
     </property>
     <property name="text">
      <string>Celsius</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="Line" name="line">
@@ -461,7 +464,7 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="label_13">
+   <widget class="QLabel" name="label_disconnect">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -471,7 +474,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Sensor Disconnected !!!</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_temp_os">
@@ -501,17 +504,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1007</width>
-     <height>28</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
