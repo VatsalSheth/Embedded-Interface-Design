@@ -214,13 +214,19 @@ class Ui(QtWidgets.QMainWindow):
         self.label_time_i.setText(now.strftime("%m/%d/%Y, %H:%M:%S"))
         if not_connect == 0:
             humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
-            if conv_type == 1:
-                temperature = (temperature*1.8) + 32
-                self.label_temp_i.setText("{0:.2f} *F".format(temperature))
-            elif conv_type == 0:
-                self.label_temp_i.setText("{0:.2f} *C".format(temperature))
-            self.label_humidity_i.setText("{0:.2f}".format(humidity))
-            self.check_alert(temperature, humidity)
+            if humidity is not None and temperature is not None:
+                if conv_type == 1:
+                    temperature = (temperature*1.8) + 32
+                    self.label_temp_i.setText("{0:.2f} *F".format(temperature))
+                elif conv_type == 0:
+                    self.label_temp_i.setText("{0:.2f} *C".format(temperature))
+                self.label_humidity_i.setText("{0:.2f}".format(humidity))
+                self.check_alert(temperature, humidity)
+                self.label_disconnect.setText("")
+            else:
+                self.label_temp.setText("NC")
+                self.label_humidity.setText("NC")
+                self.label_disconnect.setText("Sensor Disconnected !!!") 
         else:
             self.label_temp_i.setText("NC")
             self.label_humidity_i.setText("NC")
@@ -242,6 +248,7 @@ class Ui(QtWidgets.QMainWindow):
                 self.label_temp.setText("{0:.2f} *C".format(temp))    
             self.label_humidity.setText("{0:.2f}".format(hum))
             self.check_alert(temp, hum)
+            self.label_disconnect.setText("")
         
     def check_alert(self, temp, hum):
         """ 
