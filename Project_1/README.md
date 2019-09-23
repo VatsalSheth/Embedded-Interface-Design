@@ -14,9 +14,9 @@ is an acceptable drop in replacement for MySQL. As such, that is what the team u
 user and database please follow the commands below instead:
 
 * Log into MariaDB command line using `sudo mysql -u root -p` (We hope you remembered the root password made when MariaDB was installed!)
-* Inside the MariaDB command line interface create the database the project will use (aptly named "project1") using this command: `CREATE DATABASE project1;`
-* Still inside the MariaDB command line create the username and password the program will use with this command: `CREATE USER 'vatsal'@'localhost' IDENTIFIED BY '12345';`
-* Grant the user you made in the previous step all the privileges it will need with this command: `GRANT ALL PRIVILEGES ON project1.* TO 'vatsal'@'localhost';`
+* Inside the MariaDB command line interface create the database the project will use (aptly named "project1") using this command: `CREATE DATABASE DB_NAME;`
+* Still inside the MariaDB command line create the username and password the program will use with this command: `CREATE USER 'USERNAME'@'localhost' IDENTIFIED BY 'PASSWORD';`
+* Grant the user you made in the previous step all the privileges it will need with this command: `GRANT ALL PRIVILEGES ON DB_NAME.* TO 'USERNAME'@'localhost';`
 * Flush the privileges table, allowing the changes made in the previous step to take effect, with this command: `FLUSH PRIVILEGES;`
 * Exit the MariaDB command line using `CTRL + C`
 
@@ -41,8 +41,8 @@ And thats it! To the best of our knowledge these are the elements necessary to r
 ## Project Work
 
 * Vatsal
-  * GUI backend
-  * Database code
+  * GUI backend (PyQt5)
+  * Database code 
   * Humidity/Temperature plots
   * "Project Additions" functionality
     * see below
