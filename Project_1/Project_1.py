@@ -1,6 +1,15 @@
-#https://pypi.org/project/multitimer
-#https://www.w3schools.com/python/python_mysql_getstarted.asp
-#https://pimylifeup.com/raspberry-pi-humidity-sensor-dht22/ 
+"""
+File Name: Project1.py
+
+Description: This code is used to store the DHT22 sensor readings in a MySQL database and display these readings in a GUI.
+
+Date: 09/23/2019
+References: https://www.w3schools.com/python/python_mysql_getstarted.asp
+            https://pimylifeup.com/raspberry-pi-humidity-sensor-dht22/ 
+	        https://pypi.org/project/multitimer/
+            https://matplotlib.org/
+"""
+
 import mysql.connector
 import Adafruit_DHT
 import multitimer
@@ -10,9 +19,20 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 
+__author__ = "Vatsal Sheth, Ranger Beguelin"
+__copyright__ = "Copyright (C) 2019 by Vatsal Sheth and Ranger Beguelin"
+
+# Update Login credentials for db server before use
+USER="vatsal"
+PASWWD="12345"
+DATABASE="project1"
+TABLE="sensor_data7"
+
+# DHT22 sensor pin
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
 
+# Global Values
 set_humidity = 30
 set_temp = 25
 set_alarm_t = 0
@@ -21,11 +41,7 @@ not_connect = 0
 count = 0
 conv_type = 0
 
-USER="vatsal"
-PASWWD="12345"
-DATABASE="project1"
-TABLE="sensor_data7"
-
+# Connect to db server 
 mydb = mysql.connector.connect(
   host="localhost",
   user=USER,
@@ -34,12 +50,11 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
- 
+
+# Create Database if not exists 
 mycursor.execute("CREATE DATABASE IF NOT EXISTS {}".format(DATABASE))
-mycursor.execute("SHOW DATABASES")
-for x in mycursor:
-  print(x)
   
+# Connect to db server on specific database  
 mydb = mysql.connector.connect(
   host="localhost",
   user=USER,
@@ -50,30 +65,40 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
+# Create Table if not exists
 mycursor.execute("CREATE TABLE IF NOT EXISTS {} (id INT AUTO_INCREMENT PRIMARY KEY, humidity FLOAT, temperature FLOAT, time_stamp TIMESTAMP)".format(TABLE))
-mycursor.execute("SHOW TABLES")
-for x in mycursor:
-  print(x)
 
 def read_data():
-        global count
-        count +=1 
-        humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
-        now=datetime.now()
-        if humidity is not None and temperature is not None:
-            not_connect = 0
-            mycursor.execute("INSERT INTO {} (humidity, temperature, time_stamp) VALUES ({}, {}, '{}')".format(TABLE, humidity, temperature, now))
-            mydb.commit()
-            ui.timer_upadte(temperature, humidity, now)
-        else:
-            not_connect = 1
-            ui.timer_upadte("NC", "NC", now)
-        if count >= 5:
-            ui.close_app()
+    """
+        read_data: Reads data from sensor and updates on GUI. Calling function for timer
+    """
+    global count
+    count +=1 
+    humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
+    now=datetime.now()
+    if humidity is not None and temperature is not None:
+        not_connect = 0
+        mycursor.execute("INSERT INTO {} (humidity, temperature, time_stamp) VALUES ({}, {}, '{}')".format(TABLE, humidity, temperature, now))
+        mydb.commit()
+        ui.timer_upadte(temperature, humidity, now)
+    else:
+        not_connect = 1
+        ui.timer_upadte("NC", "NC", now)
+    if count >= 30:
+        ui.close_app()
             
  
 class Ui(QtWidgets.QMainWindow):
+    
+    """
+        Ui: This class inherits from QMainWindow and loads .ui file of GUI. It consist of all the functions that would be
+        required to display data on the GUI and to obtain temperature reading from the DHT22 sensor.
+    """
+    
     def __init__(self):
+        """
+            __init__: This constructor searches al child objects created in GUI and links it with local variable defined in class 
+        """
         super(Ui, self).__init__() # Call the inherited classes __init__ method
         uic.loadUi('project1_GUI.ui', self) # Load the .ui file
         self.radioButton_c = self.findChild(QtWidgets.QRadioButton, 'radioButton_c') 
@@ -106,6 +131,9 @@ class Ui(QtWidgets.QMainWindow):
         self.show() # Show the GUI
     
     def radio_c(self):
+        """
+            radio_c: To handle Celcius radio button press
+        """
         global conv_type, set_temp
         conv_type = 0;
         self.label_set_temp.setText("Temperature (*C)")
@@ -113,6 +141,9 @@ class Ui(QtWidgets.QMainWindow):
         self.slide_temp.setValue(set_temp)
     
     def radio_f(self):
+        """
+            radio_f: To handle Fahrenheit radio button press
+        """
         global conv_type, set_temp
         conv_type = 1;
         self.label_set_temp.setText("Temperature (*F)")
@@ -121,54 +152,64 @@ class Ui(QtWidgets.QMainWindow):
         
     
     def draw_temp(self):
+        """
+            draw_temp: Plot graph of last 10 values of temperature from db
+        """
         mycursor.execute("SELECT temperature FROM {} ORDER BY id DESC LIMIT 10".format(TABLE))
         temp_data = list(mycursor)
         temp_arr = np.asarray(temp_data)
-        mycursor.execute("SELECT time_stamp FROM {} ORDER BY id DESC LIMIT 10".format(TABLE))
-        time_data = list(mycursor)
-        time_arr = np.asarray(time_data)
         if conv_type == 1:
             plt.ylabel("Temperature *F")
             for x in range(10):
                 temp_arr[x] = (temp_arr[x]*1.8)+32
         elif conv_type == 0:
             plt.ylabel("Temperature *C")
-        print(temp_arr)
-        print(time_arr)
-        plt.plot(time_arr, temp_arr)
+        plt.plot(temp_arr)
         plt.title("Temperature Graph")
         plt.xlabel("Time")
         
         plt.show()
         
     def draw_humidity(self):
+        """
+            draw_humidity: Plot graph of last 10 values of humidity from db
+        """
         mycursor.execute("SELECT humidity FROM {} ORDER BY id DESC LIMIT 10".format(TABLE))
         humidity_data = list(mycursor)
         humidity_arr = np.asarray(humidity_data)
-        mycursor.execute("SELECT time_stamp FROM {} ORDER BY id DESC LIMIT 10".format(TABLE))
-        time_data = list(mycursor)
-        time_arr = np.asarray(time_data)
-        plt.plot(time_arr, humidity_arr)
+        plt.plot(humidity_arr)
         plt.title("Humidity Graph")
         plt.xlabel("Time")
         plt.ylabel("Humidity %")
         plt.show()
         
     def update_temp_slider(self):
+        """
+            update_temp_slider: To handle set temperature slider change
+        """
         global set_temp
         set_temp = self.slide_temp.value()
         self.alert_temp.setText("{}".format(set_temp))
         
     def update_humidity_slider(self):
+        """
+            update_humidity_slider: To handle set humidity slider change
+        """
         global set_humidity
         set_humidity = self.slide_humidity.value()
         self.alert_humidity.setText("{}".format(set_humidity))
     
     def close_app(self):
+        """
+            close_app: Handle exits when timer over
+        """
         self.close()
         app.exit()
         
     def refresh_data(self):
+        """
+            refresh_data: Update values on GUI on refresh button press
+        """
         now=datetime.now()
         self.label_time_i.setText(now.strftime("%m/%d/%Y, %H:%M:%S"))
         if not_connect == 0:
@@ -185,6 +226,9 @@ class Ui(QtWidgets.QMainWindow):
             self.label_humidity_i.setText("NC")
       
     def timer_upadte(self, temp, hum, stamp):
+        """
+            timer_update: Update periodic value on GUI
+        """
         self.label_time.setText(stamp.strftime("%m/%d/%Y, %H:%M:%S"))
         if temp == "NC":
             self.label_temp.setText("{}".format(temp))
@@ -200,6 +244,9 @@ class Ui(QtWidgets.QMainWindow):
             self.check_alert(temp, hum)
         
     def check_alert(self, temp, hum):
+        """ 
+            check_alert: Check for alert with respect to set points
+        """
         global set_temp, set_humidity, set_alarm_t, set_alarm_h
         if temp >= set_temp:
             set_alarm_t = 1
@@ -221,6 +268,7 @@ class Ui(QtWidgets.QMainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     ui = Ui()
-    timer=multitimer.MultiTimer(5, read_data, args=None, kwargs=None, count=5, runonstart=True)
+    # Timer initialization
+    timer=multitimer.MultiTimer(15, read_data, args=None, kwargs=None, count=30, runonstart=True)
     timer.start()
     sys.exit(app.exec_())
