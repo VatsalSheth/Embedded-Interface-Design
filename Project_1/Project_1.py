@@ -1,7 +1,7 @@
 """
 File Name: Project1.py
 
-Description: This code is used to store the DHT22 sensor readings in a MySQL database and display these readings in a GUI.
+Description: This code is used to store the DHT22 sensor readings in a MySQL database and display these readings in a GUI
 
 Date: 09/23/2019
 References: https://www.w3schools.com/python/python_mysql_getstarted.asp
