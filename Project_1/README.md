@@ -43,6 +43,7 @@ And thats it! To the best of our knowledge these are the elements necessary to r
 * Vatsal
   * GUI backend (PyQt5)
   * Database code 
+  * Alerts
   * Humidity/Temperature plots
   * "Project Additions" functionality
     * see below
