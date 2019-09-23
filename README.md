@@ -28,7 +28,7 @@ Now that Python and MariaDB are installed we unfortunately still have a long way
 * We need the "multitimer" python module
   * Install the module with this command: `sudo pip install multitimer`
 
-Last but not least we need the software that makes our graphical user interface (GUI) possible. This means we need QT, a software library, and we need PyQT, the bindings for QT on Linux when developing software in Python. Fortunately, the commands for installing these two items. were provided in lecture and are as follows:
+Last but not least we need the software that makes our graphical user interface (GUI) possible. This means we need QT, a software library, and we need PyQT, the bindings for QT on Linux when developing software in Python. Fortunately, the commands for installing these two items were provided in lecture and are as follows:
 
 * `sudo apt-get install qt5-default pyqt5-dev  pyqt5-dev-tools`
 * `sudo apt-get install qttools5-dev-tools`
@@ -52,6 +52,4 @@ And thats it! To the best of our knowledge these are the elements necessary to r
 
 ## Project Additions
 
-Going above and beyond for this project involved taking on the additional requirement of giving the user the ability to switch between degrees
-Fahrenheit and degrees Celsius. By selecting the corresponding radio button in the bottom right corner of the GUI window the user is free to 
-select their desired units for the temperature readout(s).
+Going above and beyond for this project involved taking on the additional requirement of giving the user the ability to switch between degrees Fahrenheit and degrees Celsius. By selecting the corresponding radio button in the bottom right corner of the GUI window the user is free to select their desired units for the temperature readout(s).
