@@ -4,6 +4,23 @@
   <title>Embedded Interface Design Project 2</title>
   <link rel="stylesheet" type="text/css" href="Project2_style.css">
 </head>
+<header>
+  <h1>Embedded Interface Design: Project 2</h1>
+</header>
+<div class="row">
+  <div class="column">
+    <h2>Tornado</h2>
+    <button class="btn info" onclick="tornado_refresh()">Refresh</button>
+    <label id="Temp_l">Temperature</label>
+    <label id="Humidity_l">Hunidity</label>
+  </div>
+  <div class="column">
+    <h2>Node.JS</h2>
+    <button class="btn info" onclick="nodejs_refresh()">Refresh</button>
+    <label id="Temp_l">Temperature</label>
+    <label id="Humidity_l">Hunidity</label>
+  </div>
+</div>
 <body>
 <script>
 
@@ -17,6 +34,14 @@ ws.onopen = function() {
 ws.onmessage = function(e) {
   console.log("Received: '" + e.data + "'");
 };
+
+function nodejs_refresh() {
+  
+}
+
+function tornado_refresh() {
+  
+}
 
 </script>
 </body>

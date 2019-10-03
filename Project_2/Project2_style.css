@@ -1,1 +1,45 @@
+body {
+  background-color: lightgray;
+}
 
+header {
+  background-color: gray;
+  text-align: center;
+  padding: 20px;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  outline-style: solid;
+  outline-color: black;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+} 
+
+h2 {
+  text-align: center;
+}
+
+.btn {
+  border: none; /* Remove borders */
+  color: black; /* Add a text color */
+  padding: 14px 28px; /* Add some padding */
+  cursor: pointer; /* Add a pointer cursor on mouse-over */
+  position:relative;
+  margin-bottom: 10px;
+  margin-left: 45%;
+}
+
+.info {background-color: gray;} 
+.info:hover {background: darkgray;}
+
+#Temp_l {
+	position:relative;
+	margin-left: 10%;
+}
