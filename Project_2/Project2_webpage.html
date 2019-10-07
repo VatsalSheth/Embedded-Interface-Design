@@ -10,15 +10,17 @@
 <div class="row">
   <div class="column">
     <h2>Tornado</h2>
+    <label id="Temp_t">Temperature</label>
+    <label id="Humidity_t">Hunidity</label>
+    <label id="time_t">Timestamp</label>
     <button class="btn info" onclick="tornado_refresh()">Refresh</button>
-    <label id="Temp_l">Temperature</label>
-    <label id="Humidity_l">Hunidity</label>
   </div>
   <div class="column">
     <h2>Node.JS</h2>
+    <label id="Temp_n">Temperature</label>
+    <label id="Humidity_n">Hunidity</label>
+    <label id="time_n">Timestamp</label>
     <button class="btn info" onclick="nodejs_refresh()">Refresh</button>
-    <label id="Temp_l">Temperature</label>
-    <label id="Humidity_l">Hunidity</label>
   </div>
 </div>
 <body>
@@ -28,15 +30,19 @@ const ws = new WebSocket('ws://localhost:9898/');
 
 ws.onopen = function() {
     console.log('WebSocket Client Connected');
-    ws.send('Hi this is web client.');
+    //ws.send('Hi this is web client.');
 };
 
 ws.onmessage = function(e) {
   console.log("Received: '" + e.data + "'");
+  receive_flag = 1;
 };
 
 function nodejs_refresh() {
-  
+    ws.send('Refresh');
+    console.log('WebSocket Client sent');
+    while(refresh_flag == 0);
+    
 }
 
 function tornado_refresh() {
