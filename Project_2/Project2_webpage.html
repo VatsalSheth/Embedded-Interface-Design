@@ -38,12 +38,16 @@
     <div class="column">
     <h3>NodeJs</h3>
     <table id = "table" border = "1" align = "centre" ></table><br />
-    <output type="text" id="exec_node"></output><br /><br />
+    <output type="text" id="exec_node1"></output><br /><br />
+    <output type="text" id="exec_node2"></output><br /><br />
+    <output type="text" id="exec_node3"></output><br /><br />
     </div>
     <div class="column">
     <h3>Tornado</h3>
     <table id = "table_t" border = "1" align = "centre" ></table><br />
-    <output type="text" id="exec_tornado"></output><br /><br />
+    <output type="text" id="exec_tornado1"></output><br /><br />
+    <output type="text" id="exec_tornado2"></output><br /><br />
+    <output type="text" id="exec_tornado3"></output><br /><br />
     </div>
   </div>
 </div>
@@ -124,7 +128,9 @@ ws.onmessage = function(e) {
     create_table(obj, "table");
     stop_n = performance.now();
     console.log(" NodeJS Execution Time " + (stop_n - start) + " ms")
-    document.getElementById("exec_node").value = "NodeJS:\nStart Time: " + start + " ms\nStop Time: " + stop_n + " ms\nExecution Time " + (stop_n - start) + " ms";
+    document.getElementById("exec_node1").value = "Start Time " + (start) + " ms";
+    document.getElementById("exec_node2").value = "Stop Time " + (stop_n) + " ms";
+    document.getElementById("exec_node3").value = "Execution Time " + (stop_n - start) + " ms";
     }
 };
 
@@ -217,7 +223,9 @@ wt.onmessage = function(e) {
     create_table(obj_t, "table_t");
     stop_t = performance.now();
     console.log("Tornado Execution Time " + (stop_t - start) + " ms")
-    document.getElementById("exec_tornado").value = " Tornado Execution Time " + (stop_t - start) + " ms";
+    document.getElementById("exec_tornado1").value = "Start Time " + (start) + " ms";
+    document.getElementById("exec_tornado2").value = "Stop Time " + (stop_t) + " ms";
+    document.getElementById("exec_tornado3").value = "Execution Time " + (stop_t - start) + " ms";
     }
   else if(graph_temp_flag == 1) {
     graph_temp_flag = 0;
