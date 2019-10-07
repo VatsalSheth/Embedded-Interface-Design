@@ -1,5 +1,5 @@
 /*******************************************************************************************************
- * File Name: Project1.py
+ * File Name: nodejs_server.js
  * Description: This code implements NodeJs Server. It conncects to SQL database and returns entry as per
  * query received through websocket as JSON string
  * Date: 09/23/2019
