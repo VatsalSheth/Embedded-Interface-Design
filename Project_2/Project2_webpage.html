@@ -71,35 +71,41 @@ check_tornado = 0;
 
 performance = window.performance;
 
-// log function
+// log nodejs status function
 log = function(data) {
   document.getElementById("nodejs_terminal").value = data;  
 };
 
-
+// log tornado status function
 log_t = function(data) {
   document.getElementById("tornado_terminal").value = data;  
 };
 
-
+//Websocket for NodeJS Server
 const ws = new WebSocket('ws://128.138.189.64:9898/ws');
+
+//Websocket for Tornado Server
 const wt = new WebSocket('ws://128.138.189.64:8888/ws');
 
+//Client connected to NodeJS server
 ws.onopen = function() {
   console.log('WebSocket Client Connected to NODEJS');
   log("Connected !!!");
 };
 
+//Client disconnected to NodeJS server
 ws.onclose = function() {
   console.log('WebSocket Client Disconnected to NodeJS');
   log("Disconnected !!!");
 }
 
+//Client connected to Tornado server
 wt.onopen = function() {
   console.log('WebSocket Client Connected to Tornado');
   log_t("Connected !!!");
 };
 
+//Client disconnected to Tornado server
 wt.onclose = function() {
   console.log('WebSocket Client Disconnected to Tornado');
   log_t("Disconnected !!!");
@@ -134,6 +140,7 @@ ws.onmessage = function(e) {
     }
 };
 
+//Draw Temperature Graph
 window_t = function (data_points) {
   if (fahrenheit_flag == 1)
   {
@@ -170,7 +177,8 @@ window_t = function (data_points) {
   }); 
   chart.render();
 }
-    
+ 
+//Draw Humidity Graph
 window_h = function (data_points) {
   chart = new CanvasJS.Chart("chart_h", {
     animationEnabled: true,
@@ -326,7 +334,7 @@ function tornado_refresh() {
     check_tornado = 1;
 }
 
-
+//Function when radio button pressed to change units
 function fahrenheit_to_celsius() {
   fahrenheit_flag = 0;
   
@@ -349,7 +357,7 @@ function fahrenheit_to_celsius() {
   }
 }
 
-
+//Function when radio button pressed to change units
 function celsius_to_fahrenheit() {
   fahrenheit_flag = 1;
   
@@ -372,12 +380,14 @@ function celsius_to_fahrenheit() {
   }
 }
 
+//Temperature Graph button click event
 function graph_temp() {
   graph_temp_flag = 1;
   check_graph = 1;
   wt.send("graph_temp");
 }
 
+//Humidity Graph button click event
 function graph_humidity() {
   graph_humidity_flag = 1;
   wt.send("graph_humidity");
