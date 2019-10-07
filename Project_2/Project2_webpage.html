@@ -4,6 +4,7 @@
   <title>Embedded Interface Design Project 2</title>
   <link rel="stylesheet" type="text/css" href="Project2_style.css">
   <script src = "http://code.jquery.com/jquery.min.js"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
 <header>
   <h1>Embedded Interface Design: Project 2</h1>
@@ -15,10 +16,10 @@
     NodeJS: <output type="text" id="nodejs_terminal"></output><br /><br />
   </div>
   <div class="column">
-    <button id = "refresh" class="btn info" onclick="nodejs_refresh()">Refresh</button>
-    <button id = "refresh" class="btn info" onclick="tornado_refresh()">Fetch Database</button>
-    <input id = "radio" type="radio" name="Units" value="Celsius">Celsius</input>
-    <input type="radio" name="Units" value="Fahrenheit">Fahrenheit</input>
+    <button id = "refresh" class="btn info" onclick="tornado_refresh()">Refresh</button>
+    <button id = "refresh" class="btn info" onclick="nodejs_refresh()">Fetch Database</button>
+    <input id = "radio" type="radio" name="Units" value="Celsius" onchange="fahrenheit_to_celsius()" checked>Celsius</input>
+    <input type="radio" name="Units" value="Fahrenheit" onchange="celsius_to_fahrenheit()">Fahrenheit</input>
     <br>
   </div>
 </div>
@@ -26,12 +27,24 @@
 <div class="row">
   <div class="column">
     <h2>Graphs</h2>
+    <button id = "refresh" class="btn info" onclick="graph_temp()">Temperature</button>
+    <button id = "refresh" class="btn info" onclick="graph_humidity()">Humidity</button>
+    <div id="chart_t" style="height: 200px; width: 90%;"></div><br />
+    <div id="chart_h" style="height: 200px; width: 90%;"></div>
   </div>
   <div class="column">
     <h2>Tables</h2>
-    <button id = "test" class="btn info" onclick="test_network()">Test Network</button>
-    <table id = "table" border = "1" align = "centre" ></table>
-    <table id = "table_t" border = "1" align = "centre" ></table>
+    <button id = "test" class="btn info" onclick="test_network()">Test Network</button><br />
+    <div class="column">
+    <h3>NodeJs</h3>
+    <table id = "table" border = "1" align = "centre" ></table><br />
+    <output type="text" id="exec_node"></output><br /><br />
+    </div>
+    <div class="column">
+    <h3>Tornado</h3>
+    <table id = "table_t" border = "1" align = "centre" ></table><br />
+    <output type="text" id="exec_tornado"></output><br /><br />
+    </div>
   </div>
 </div>
 
@@ -44,22 +57,49 @@ nodejs_table_flag = 0;
 tornado_refresh_flag = 0;
 tornado_table_flag = 0;
 table_exists_flag = 0;
+fahrenheit_flag = 0;
+graph_humidity_flag = 0;
+graph_temp_flag = 0;
+check_test = 0;
+check_graph = 0;
+check_node = 0;
+check_tornado = 0;
+
+performance = window.performance;
 
 // log function
 log = function(data) {
   document.getElementById("nodejs_terminal").value = data;  
 };
 
-const ws = new WebSocket('ws://localhost:9898/');
-const wt = new WebSocket('ws://128.138.189.164:8888/ws');
+
+log_t = function(data) {
+  document.getElementById("tornado_terminal").value = data;  
+};
+
+
+const ws = new WebSocket('ws://128.138.189.64:9898/ws');
+const wt = new WebSocket('ws://128.138.189.64:8888/ws');
 
 ws.onopen = function() {
   console.log('WebSocket Client Connected to NODEJS');
+  log("Connected !!!");
 };
+
+ws.onclose = function() {
+  console.log('WebSocket Client Disconnected to NodeJS');
+  log("Disconnected !!!");
+}
 
 wt.onopen = function() {
   console.log('WebSocket Client Connected to Tornado');
+  log_t("Connected !!!");
 };
+
+wt.onclose = function() {
+  console.log('WebSocket Client Disconnected to Tornado');
+  log_t("Disconnected !!!");
+}
 
 //This function is executed everytime data is received from Nodejs
 ws.onmessage = function(e) {
@@ -69,14 +109,90 @@ ws.onmessage = function(e) {
 
   if(nodejs_refresh_flag == 1) {
     nodejs_refresh_flag = 0;
-    log("Timestamp: " +  + " Temperature: " + obj[0].temperature + "*C Humidity: " + obj[0].humidity + " %");
+    //Converting to fahrenheit if appropriate radio button is checked.
+    if (fahrenheit_flag == 1)
+    {
+      log("Timestamp: " + obj[0].timestamp + " Temperature: " + (((obj[0].temperature)*9/5) + 32) + " F Humidity: " + obj[0].humidity + " %");
+    }
+    else
+    {
+      log("Timestamp: " + obj[0].timestamp + " Temperature: " + obj[0].temperature + "*C Humidity: " + obj[0].humidity + " %");
+    }
     }
   else if(nodejs_table_flag == 1) {
     nodejs_table_flag = 0;
     create_table(obj, "table");
+    stop_n = performance.now();
+    console.log(" NodeJS Execution Time " + (stop_n - start) + " ms")
+    document.getElementById("exec_node").value = "NodeJS:\nStart Time: " + start + " ms\nStop Time: " + stop_n + " ms\nExecution Time " + (stop_n - start) + " ms";
     }
 };
 
+window_t = function (data_points) {
+  if (fahrenheit_flag == 1)
+  {
+    for (var i = 0; i < 10; i++)
+    {
+      data_points[i].temperature = ((data_points[i].temperature * (9.0/5.0))+ 32);
+    }
+  }
+  
+  chart = new CanvasJS.Chart("chart_t", {
+      animationEnabled: true,
+      theme: "light2",
+      title:{
+        text: "Temperature"
+      },
+      axisY:{
+        includeZero: false
+      },
+      data: [{        
+        type: "line",       
+        dataPoints: [
+          { y: data_points[9].temperature},
+          { y: data_points[8].temperature },
+          { y: data_points[7].temperature },
+          { y: data_points[6].temperature },
+          { y: data_points[5].temperature },
+          { y: data_points[4].temperature },
+          { y: data_points[3].temperature },
+          { y: data_points[2].temperature },
+          { y: data_points[1].temperature },
+          { y: data_points[0].temperature },
+        ]
+      }]
+  }); 
+  chart.render();
+}
+    
+window_h = function (data_points) {
+  chart = new CanvasJS.Chart("chart_h", {
+    animationEnabled: true,
+    theme: "light2",
+    title:{
+      text: "Humidity"
+    },
+    axisY:{
+      includeZero: false
+    },
+    data: [{        
+      type: "line",       
+      dataPoints: [
+        { y: data_points[9].humidity},
+        { y: data_points[8].humidity },
+        { y: data_points[7].humidity },
+        { y: data_points[6].humidity },
+        { y: data_points[5].humidity },
+        { y: data_points[4].humidity },
+        { y: data_points[3].humidity },
+        { y: data_points[2].humidity },
+        { y: data_points[1].humidity },
+        { y: data_points[0].humidity },
+      ]
+    }]
+  }); 
+  chart.render();
+}
 
 //This function is executed everytime data is received from Tornado
 wt.onmessage = function(e) {
@@ -86,12 +202,31 @@ wt.onmessage = function(e) {
 
   if(tornado_refresh_flag == 1) {
     tornado_refresh_flag = 0;
-    log("Timestamp: " +  + " Temperature: " + obj_t[0].temperature + "*C Humidity: " + obj_t[0].humidity + " %");
+    //Converting to fahrenheit if appropriate radio button is checked.
+    if (fahrenheit_flag == 1)
+    {
+      log_t("Timestamp: " + obj_t[0].timestamp + " Temperature: " + (((obj_t[0].temperature)*9/5) + 32) + " F Humidity: " + obj_t[0].humidity + " %");
+    }
+    else
+    {
+      log_t("Timestamp: " + obj_t[0].timestamp + " Temperature: " + obj_t[0].temperature + " C Humidity: " + obj_t[0].humidity + " %");
+    }
     }
   else if(tornado_table_flag == 1) {
     tornado_table_flag = 0;
     create_table(obj_t, "table_t");
+    stop_t = performance.now();
+    console.log("Tornado Execution Time " + (stop_t - start) + " ms")
+    document.getElementById("exec_tornado").value = " Tornado Execution Time " + (stop_t - start) + " ms";
     }
+  else if(graph_temp_flag == 1) {
+    graph_temp_flag = 0;
+    window_t(obj_t);
+  }
+  else if(graph_humidity_flag == 1) {
+    graph_humidity_flag = 0;
+    window_h(obj_t);
+  }
 };
 
 
@@ -101,24 +236,37 @@ function nodejs_refresh() {
     ws.send('Refresh');
     console.log('Request sent for latest Humidity and Temperature Sensor values from Tornado');
     nodejs_refresh_flag = 1;
+    check_node = 1;
 }
 
 
 //Function to create a table of humidity values and timestamp deoending on if the table exists.
 function create_table(obj, id) {
-  var table_array = [["Timestamp", "Temperature (C)", "Humidity (%)"], [obj[0].Timestamp, obj[0].temperature, obj[0].humidity],
-                                                              [obj[1].Timestamp, obj[1].temperature, obj[1].humidity],
-                                                              [obj[2].Timestamp, obj[2].temperature, obj[2].humidity],
-                                                              [obj[3].Timestamp, obj[3].temperature, obj[3].humidity],
-                                                              [obj[4].Timestamp, obj[4].temperature, obj[4].humidity],
-                                                              [obj[5].Timestamp, obj[5].temperature, obj[5].humidity],
-                                                              [obj[6].Timestamp, obj[6].temperature, obj[6].humidity],
-                                                              [obj[7].Timestamp, obj[7].temperature, obj[7].humidity],
-                                                              [obj[8].Timestamp, obj[8].temperature, obj[8].humidity],
-                                                              [obj[9].Timestamp, obj[9].temperature, obj[9].humidity]],
+  var tmp = "C";
+  
+  if (fahrenheit_flag == 1)
+  {
+    tmp = "F"
+    for (var i = 0; i < 10; i++)
+    {
+      obj[i].temperature = ((obj[i].temperature * (9.0/5.0))+ 32);
+    }
+  }
+  
+   var table_array = [["Timestamp", "Temperature ("+tmp+")", "Humidity (%)"], [obj[0].timestamp, obj[0].temperature, obj[0].humidity],
+                                                              [obj[1].timestamp, obj[1].temperature, obj[1].humidity],
+                                                              [obj[2].timestamp, obj[2].temperature, obj[2].humidity],
+                                                              [obj[3].timestamp, obj[3].temperature, obj[3].humidity],
+                                                              [obj[4].timestamp, obj[4].temperature, obj[4].humidity],
+                                                              [obj[5].timestamp, obj[5].temperature, obj[5].humidity],
+                                                              [obj[6].timestamp, obj[6].temperature, obj[6].humidity],
+                                                              [obj[7].timestamp, obj[7].temperature, obj[7].humidity],
+                                                              [obj[8].timestamp, obj[8].temperature, obj[8].humidity],
+                                                              [obj[9].timestamp, obj[9].temperature, obj[9].humidity]],
+                                                
+
                                                           
   table = document.getElementById(id);
-  console.log('Timestamp: ' + table_array[1][0] + 'Temperature:' + table_array[1][1] + 'Humidity:' + table_array[1][2] );
   
   //Delete the previous table if table exists
   if (table_exists_flag == 1)
@@ -152,6 +300,8 @@ function create_table(obj, id) {
 
 //Function to execute when the test network button is pressed 
 function test_network() {
+  check_test = 1;
+  start = performance.now();
   ws.send("Table");
   wt.send("Table");
   console.log('Request sent for 10 Humidity values from nodejs');
@@ -162,9 +312,67 @@ function test_network() {
 
 //Function to execute when the fetch database button is pressed
 function tornado_refresh() {
-    ws.send('Refresh');
-    console.log('Request sent for latest Humidity and Temperature Sensor values from Tornado');
-    nodejs_refresh_flag = 1; 
+    wt.send('Refresh');
+    console.log('Request sent for latest Humidity and Temperature Sensor values from Tornado');    
+    tornado_refresh_flag = 1; 
+    check_tornado = 1;
+}
+
+
+function fahrenheit_to_celsius() {
+  fahrenheit_flag = 0;
+  
+  console.log('Converting from Fahrenheit to Celsius');
+  
+  if(check_tornado == 1) {
+    tornado_refresh();
+  }
+  
+  if(check_node == 1) {
+    nodejs_refresh();
+  }
+    
+  if(check_graph == 1) {
+    graph_temp();
+  }
+  
+  if(check_test == 1) {
+    test_network();
+  }
+}
+
+
+function celsius_to_fahrenheit() {
+  fahrenheit_flag = 1;
+  
+  console.log('Converting from Celsius to Fahrenheit');
+  
+  if(check_tornado == 1) {
+    tornado_refresh();
+  }
+  
+  if(check_node == 1) {
+    nodejs_refresh();
+  }
+    
+  if(check_graph == 1) {
+    graph_temp();
+  }
+  
+  if(check_test == 1) {
+    test_network();
+  }
+}
+
+function graph_temp() {
+  graph_temp_flag = 1;
+  check_graph = 1;
+  wt.send("graph_temp");
+}
+
+function graph_humidity() {
+  graph_humidity_flag = 1;
+  wt.send("graph_humidity");
 }
 
 </script>

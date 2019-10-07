@@ -22,7 +22,23 @@ header {
   clear: both;
 } 
 
+#table {
+  outline-style: solid;
+  outline-color: black;
+  margin-left: 1%
+}
+
+#table_t {
+  outline-style: solid;
+  outline-color: black;
+  margin-left: 1%
+}
+
 h2 {
+  text-align: center;
+}
+
+h3 {
   text-align: center;
 }
 
@@ -43,7 +59,7 @@ h2 {
   outline-color: black;
   margin-bottom: 30px;
   background-color: white;
-  padding: 2px 10px; /* Add some padding */
+  padding: 20px, 20px; /* Add some padding */
 }
 
 #tornado_terminal {
@@ -51,7 +67,19 @@ h2 {
   outline-color: black;
   margin-bottom: 30px;
   background-color: white;
-  padding: 2px,10px; /* Add some padding */
+  padding: 20px,20px; /* Add some padding */
+}
+
+#exec_node {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding:2px,10px;
+}
+
+#exec_tornado {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding:2px,10px;
 }
 
 #radio {
@@ -64,8 +92,9 @@ h2 {
   padding: 14px 28px; /* Add some padding */
   cursor: pointer; /* Add a pointer cursor on mouse-over */
   position:relative;
-  margin-top: 30px;
-  margin-left: 36%;
+  margin-top: 10px;
+  margin-left: 40%;
+  margin-bottom: 20px;
 }
 
 #refresh {
@@ -74,7 +103,8 @@ h2 {
   padding: 14px 28px; /* Add some padding */
   cursor: pointer; /* Add a pointer cursor on mouse-over */
   position:relative;
-  margin-top: 30px;
+  margin-top: 10%;
+  margin-bottom: 5%;
   margin-left: 10%;
 }
 
