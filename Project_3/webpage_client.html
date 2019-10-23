@@ -55,7 +55,7 @@
 <div class="row">
   <button id = "refresh" class="btn info" onclick="single()">Single SQS Record</button>
   <button id = "refresh" class="btn info" onclick="all_sqs()">All SQS Record</button>
-  <table id = "table" border = "1" align = "centre" ></table><br />
+  <table id = "table_s" border = "1" align = "centre" ></table><br />
 </div>
 
 <body>
@@ -67,6 +67,7 @@ nodejs_table_flag = 0;
 tornado_refresh_flag = 0;
 tornado_table_flag = 0;
 table_exists_flag = 0;
+sqs_exists_flag = 0;
 fahrenheit_flag = 0;
 graph_humidity_flag = 0;
 graph_temp_flag = 0;
@@ -132,14 +133,80 @@ function single() {
 });
 }
 
+function sqs_delete_table() {
+  table_s = document.getElementById("table_s");
+  
+  var tmp = "C";
+  
+  if (fahrenheit_flag == 1)
+  {
+    tmp = "F";
+  }
+  
+  //Delete the previous table if table exists
+  if (sqs_exists_flag == 1)
+  {
+    var row_count = table_s.rows.length;
+    console.log("Row number: " + table_s.rows.length);
+    for (var i = row_count - 1; i >= 0; i--) {
+      table_s.deleteRow(i);
+      console.log("Row number: " + i);
+    }
+  }
+  else
+  {
+    sqs_exists_flag = 0;
+  }
+  var table_array = [["Timestamp", "Temperature ("+tmp+")", "Humidity (%)"]];
+  var newRow = table_s.insertRow(table_s.length);
+  for (var j = 0; j < table_array[0].length; j++)
+  {
+    var cell = newRow.insertCell(j);
+    
+    cell.innerHTML = table_array[0][j];
+  }
+  sqs_exists_flag = 1;
+}
+
+
+function add_row(obj) {  
+  table_s = document.getElementById("table_s");
+  data = JSON.parse(obj.Messages[0].Body);
+  
+  if (fahrenheit_flag == 1)
+  {
+    data.T = ((data.T * (9.0/5.0))+ 32);
+  }
+  
+  var table_array = [[data.Ti, data.T, data.H]];
+  var newRow = table_s.insertRow(table_s.length);
+  for (var j = 0; j < table_array[0].length; j++)
+  {
+    var cell = newRow.insertCell(j);
+    
+    cell.innerHTML = table_array[0][j];
+  }
+  sqs_exists_flag = 1;
+}
+
 function all_sqs() {
   var i;
   var flag = 0;
+  var sqs_data;
   
   sqs.getQueueAttributes(params_s, function(err, data) {
   if (err) console.log(err, err.stack); // an error occurred
   else {
+    sqs_delete_table();
+    
     i = data.Attributes.ApproximateNumberOfMessages;
+    console.log(i);
+    var loop = i - 10;
+    console.log("loop = ",loop);
+    if(loop < 0) {
+        loop = 0;
+    }
+    
     while(i) {
       sqs.receiveMessage(params, function(err, data) {
       if (err) {
@@ -154,6 +221,10 @@ function all_sqs() {
         }
         sqs_data = JSON.parse(data.Messages[0].Body);
         console.log(sqs_data.id);
+        if(i<20) {
+          console.log("inside");
+          add_row(data);
+        }
         var deleteParams = {
           QueueUrl: queueURL,
           ReceiptHandle: data.Messages[0].ReceiptHandle
@@ -167,7 +238,7 @@ function all_sqs() {
       });
       }
     });
-    i--;
+      i--;
     }
   }
 });
