@@ -8,7 +8,7 @@
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.553.0.min.js"></script>
 </head>
 <header>
-  <h1>Embedded Interface Design: Project 2</h1>
+  <h1>Embedded Interface Design: Project 3</h1>
 </header>
 <div class="row">
   <div class="column">
@@ -53,7 +53,10 @@
   </div>
 </div>
 <div class="row">
+  <button id = "refresh" class="btn info" onclick="sqs_size()">Queue Size</button>
+  <output type="text" id="sqs_terminal"> </output><br /><br />
   <button id = "refresh" class="btn info" onclick="single()">Single SQS Record</button>
+  <output type="text" id="single_terminal"> </output><br /><br />
   <button id = "refresh" class="btn info" onclick="all_sqs()">All SQS Record</button>
   <table id = "table_s" border = "1" align = "centre" ></table><br />
 </div>
@@ -85,6 +88,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 });
 
 sqs = new AWS.SQS({apiVersion: '2012-11-05'});
+
 queueURL = "https://sqs.us-east-1.amazonaws.com/294858239602/dht";
 
 params = {
@@ -108,6 +112,15 @@ log_t = function(data) {
   document.getElementById("tornado_terminal").value = data;  
 };
 
+function sqs_size() {
+  sqs.getQueueAttributes(params_s, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else {
+    document.getElementById("sqs_terminal").value = "______________________" + data.Attributes.ApproximateNumberOfMessages;
+  }
+});
+}
+
 function single() {
   sqs.receiveMessage(params, function(err, data) {
   if (err) {
@@ -115,9 +128,14 @@ function single() {
   } 
   else if (data.Messages) {
     console.log(data.Messages);
-    console.log(data.Messages.length);
+    if(data.Messages.length === 0) {
+      document.getElementById("single_terminal").value = "Queue Empty !!!";
+      return;
+    }
+    
     sqs_data = JSON.parse(data.Messages[0].Body);
     console.log(sqs_data.id);
+    document.getElementById("single_terminal").value = "Temp: " + sqs_data.T + " Humidity: " + sqs_data.H + " Timestamp: " + sqs_data.Ti;
     var deleteParams = {
       QueueUrl: queueURL,
       ReceiptHandle: data.Messages[0].ReceiptHandle
@@ -127,6 +145,7 @@ function single() {
         console.log("Delete Error", err);
       } else {
         console.log("Message Deleted", data);
+        sqs_size();
       }
     });
   }
@@ -190,41 +209,24 @@ function add_row(obj) {
 }
 
 function all_sqs() {
-  var i;
-  var flag = 0;
+  //var i;
+  //var flag = 0;
   var sqs_data;
   
   sqs.getQueueAttributes(params_s, function(err, data) {
   if (err) console.log(err, err.stack); // an error occurred
   else {
-    sqs_delete_table();
-    
     i = data.Attributes.ApproximateNumberOfMessages;
+    sqs_delete_table();
     console.log(i);
-    var loop = i - 10;
-    console.log("loop = ",loop);
-    if(loop < 0) {
-        loop = 0;
-    }
+    var loop = i-20;
     
-    while(i) {
+    while(loop>0) {
       sqs.receiveMessage(params, function(err, data) {
       if (err) {
         console.log("Receive Error", err);
       } 
       else if (data.Messages) {
-        console.log(data.Messages);
-        console.log(data.Messages.length);
-        if(data.Messages.length === 0) {
-          i=0;
-          return;
-        }
-        sqs_data = JSON.parse(data.Messages[0].Body);
-        console.log(sqs_data.id);
-        if(i<20) {
-          console.log("inside");
-          add_row(data);
-        }
         var deleteParams = {
           QueueUrl: queueURL,
           ReceiptHandle: data.Messages[0].ReceiptHandle
@@ -234,6 +236,32 @@ function all_sqs() {
           console.log("Delete Error", err);
         } else {
           console.log("Message Deleted", data);
+          sqs_size();
+        }
+      });
+      }
+    });
+      loop--;
+      i--;
+    }
+    
+    while(i>0) {
+      sqs.receiveMessage(params, function(err, data) {
+      if (err) {
+        console.log("Receive Error", err);
+      } 
+      else if (data.Messages) {
+        add_row(data);
+        var deleteParams = {
+          QueueUrl: queueURL,
+          ReceiptHandle: data.Messages[0].ReceiptHandle
+        };
+        sqs.deleteMessage(deleteParams, function(err, data) {
+        if (err) {
+          console.log("Delete Error", err);
+        } else {
+          console.log("Message Deleted", data);
+          sqs_size();
         }
       });
       }

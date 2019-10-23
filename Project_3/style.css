@@ -69,6 +69,22 @@ h3 {
   padding: 20px, 20px; /* Add some padding */
 }
 
+#sqs_terminal {
+  outline-style: solid;
+  outline-color: black;
+  margin-left: 30px;
+  background-color: white;
+  padding: 20px, 20px; /* Add some padding */
+}
+
+#single_terminal {
+  outline-style: solid;
+  outline-color: black;
+  margin-left: 30px;
+  background-color: white;
+  padding: 20px, 20px; /* Add some padding */
+}
+
 #tornado_terminal {
   outline-style: solid;
   outline-color: black;
