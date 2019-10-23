@@ -87,9 +87,14 @@ sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 queueURL = "https://sqs.us-east-1.amazonaws.com/294858239602/dht";
 
 params = {
- MaxNumberOfMessages: 10,
+ MaxNumberOfMessages: 1,
  QueueUrl: queueURL,
  WaitTimeSeconds: 1,
+};
+
+params_s = {
+  QueueUrl: queueURL,
+  AttributeNames: ['ApproximateNumberOfMessages']
 };
 
 // log nodejs status function
@@ -102,50 +107,7 @@ log_t = function(data) {
   document.getElementById("tornado_terminal").value = data;  
 };
 
-function all_sqs() {
-  while(1) {
-    console.log("ALL");
-    //break;
-    test = sqs.receiveMessage(params, function(err, data) {
-    if (err) {
-      console.log("Receive Error", err);
-      //break;
-    } 
-    else if (data.Messages) {
-      console.log(data.Messages.length);
-      console.log(data.Messages);
-      if(data.Messages.length == 0) {
-        console.log("BREAK");
-        break;
-      }
-      sqs_data = JSON.parse(data.Messages[0].Body);
-      console.log(sqs_data.id);
-      var deleteParams = {
-        QueueUrl: queueURL,
-        ReceiptHandle: data.Messages[0].ReceiptHandle
-      };
-      sqs.deleteMessage(deleteParams, function(err, data) {
-        if (err) {
-          console.log("Delete Error", err);
-        } else {
-          console.log("Message Deleted", data);
-        }
-      });
-    }
-    else {
-      console.log("else");
-      break;
-    }
-  });
-  console.log("end");
-  }
-}
-
 function single() {
-  var i = 10;
-  var flag = 0;
-  while(i) {
-    console.log(i);
   sqs.receiveMessage(params, function(err, data) {
   if (err) {
     console.log("Receive Error", err);
@@ -153,10 +115,6 @@ function single() {
   else if (data.Messages) {
     console.log(data.Messages);
     console.log(data.Messages.length);
-    if(data.Messages.length === 0) {
-      i=0;
-      return;
-    }
     sqs_data = JSON.parse(data.Messages[0].Body);
     console.log(sqs_data.id);
     var deleteParams = {
@@ -172,8 +130,47 @@ function single() {
     });
   }
 });
-  i--;
 }
+
+function all_sqs() {
+  var i;
+  var flag = 0;
+  
+  sqs.getQueueAttributes(params_s, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else {
+    i = data.Attributes.ApproximateNumberOfMessages;
+    while(i) {
+      sqs.receiveMessage(params, function(err, data) {
+      if (err) {
+        console.log("Receive Error", err);
+      } 
+      else if (data.Messages) {
+        console.log(data.Messages);
+        console.log(data.Messages.length);
+        if(data.Messages.length === 0) {
+          i=0;
+          return;
+        }
+        sqs_data = JSON.parse(data.Messages[0].Body);
+        console.log(sqs_data.id);
+        var deleteParams = {
+          QueueUrl: queueURL,
+          ReceiptHandle: data.Messages[0].ReceiptHandle
+        };
+        sqs.deleteMessage(deleteParams, function(err, data) {
+        if (err) {
+          console.log("Delete Error", err);
+        } else {
+          console.log("Message Deleted", data);
+        }
+      });
+      }
+    });
+    i--;
+    }
+  }
+});
 }
 
 //Websocket for NodeJS Server
