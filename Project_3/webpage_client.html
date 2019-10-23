@@ -87,7 +87,7 @@ sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 queueURL = "https://sqs.us-east-1.amazonaws.com/294858239602/dht";
 
 params = {
- MaxNumberOfMessages: 1,
+ MaxNumberOfMessages: 10,
  QueueUrl: queueURL,
  WaitTimeSeconds: 1,
 };
@@ -105,10 +105,11 @@ log_t = function(data) {
 function all_sqs() {
   while(1) {
     console.log("ALL");
-    sqs.receiveMessage(params, function(err, data) {
+    //break;
+    test = sqs.receiveMessage(params, function(err, data) {
     if (err) {
       console.log("Receive Error", err);
-      break;
+      //break;
     } 
     else if (data.Messages) {
       console.log(data.Messages.length);
@@ -133,18 +134,29 @@ function all_sqs() {
     }
     else {
       console.log("else");
+      break;
     }
   });
+  console.log("end");
   }
 }
 
 function single() {
+  var i = 10;
+  var flag = 0;
+  while(i) {
+    console.log(i);
   sqs.receiveMessage(params, function(err, data) {
   if (err) {
     console.log("Receive Error", err);
   } 
   else if (data.Messages) {
     console.log(data.Messages);
+    console.log(data.Messages.length);
+    if(data.Messages.length === 0) {
+      i=0;
+      return;
+    }
     sqs_data = JSON.parse(data.Messages[0].Body);
     console.log(sqs_data.id);
     var deleteParams = {
@@ -160,6 +172,8 @@ function single() {
     });
   }
 });
+  i--;
+}
 }
 
 //Websocket for NodeJS Server
