@@ -112,6 +112,7 @@ log_t = function(data) {
   document.getElementById("tornado_terminal").value = data;  
 };
 
+//Gets SQS queue size
 function sqs_size() {
   sqs.getQueueAttributes(params_s, function(err, data) {
   if (err) console.log(err, err.stack); // an error occurred
@@ -121,6 +122,7 @@ function sqs_size() {
 });
 }
 
+//Retrieves single element from AWS SQS
 function single() {
   sqs.receiveMessage(params, function(err, data) {
   if (err) {
@@ -156,6 +158,7 @@ function single() {
 });
 }
 
+//Deletes table used for Queue data display
 function sqs_delete_table() {
   table_s = document.getElementById("table_s");
   
@@ -191,7 +194,7 @@ function sqs_delete_table() {
   sqs_exists_flag = 1;
 }
 
-
+//Add row to table that displays queue data
 function add_row(obj) {  
   table_s = document.getElementById("table_s");
   data = JSON.parse(obj.Messages[0].Body);
@@ -212,9 +215,8 @@ function add_row(obj) {
   sqs_exists_flag = 1;
 }
 
+//Retrieves All data from SQS
 function all_sqs() {
-  //var i;
-  //var flag = 0;
   var sqs_data;
   
   sqs.getQueueAttributes(params_s, function(err, data) {
