@@ -38,7 +38,7 @@ class gui_functionality(Ui_MainWindow):
         temperature, humidity = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
         if temperature is None and humidity is None:
             self.plainTextEdit.appendPlainText("ERROR: SENSOR IS OFFLINE\n")
-            mylist = {"id":"N", "Ti":str(current_time)}
+            mylist = {"id":"A", "S": "Alert !!! Sensor Disconnected"}
             JSON_string = json.dumps(mylist)
             MQTTClient.publish("demo/1", JSON_string, 0)
             return
@@ -52,9 +52,9 @@ class gui_functionality(Ui_MainWindow):
             self.plainTextEdit.appendPlainText("Temperature = %0.2f degree Celsius" %temperature)
             self.threshold_calc(temperature, humidity)
         self.plainTextEdit.appendPlainText("Humidity = %0.2f percent\n" %humidity)
-        mylist = {"id":"D", "T":temperature, "H":humidity, "Ti":str(current_time)}
-        JSON_string = json.dumps(mylist)
-        MQTTClient.publish("demo/1", JSON_string, 0)
+        #mylist = {"id":"D", "T":temperature, "H":humidity, "Ti":str(current_time)}
+        #JSON_string = json.dumps(mylist)
+        #MQTTClient.publish("demo/1", JSON_string, 0)
         
         
     def print_interval(self, current_time, temperature, humidity):
@@ -143,12 +143,12 @@ class gui_functionality(Ui_MainWindow):
         current_time = datetime.datetime.now()
         if temparray > self.doubleSpinBox_temp.value():
             self.plainTextEdit.appendPlainText("WARNING: Temperature exceeds Threshold ")
-            mylist = {"id":"A", "S": self.doubleSpinBox_temp.value(), "V":temperature, "Ti":str(current_time)}
+            mylist = {"id":"A", "S": "Alert !!! Temperature Threshold Exceeded !!!"}
             JSON_string = json.dumps(mylist)
             MQTTClient.publish("demo/1", JSON_string, 0)        
         if humarray > self.doubleSpinBox_hum.value():
             self.plainTextEdit.appendPlainText("WARNING: Humidity exceeds Threshold\n")
-            mylist = {"id":"A", "S": self.doubleSpinBox_hum.value(), "V": humidity, "Ti":str(current_time)}
+            mylist = {"id":"A", "S": "Alert !!! Humidity Threshold Exceeded !!!"}
             JSON_string = json.dumps(mylist)
             MQTTClient.publish("demo/1", JSON_string, 0) 
     
@@ -173,6 +173,9 @@ class gui_functionality(Ui_MainWindow):
                 db.rollback()
         else:
             self.plainTextEdit.appendPlainText("ERROR: SENSOR IS OFFLINE\n")
+            mylist = {"id":"A", "S": "Alert !!! Sensor Disconnected"}
+            JSON_string = json.dumps(mylist)
+            MQTTClient.publish("demo/1", JSON_string, 0)
         reads = reads + 1    
         if reads == 30:
             sys.exit()

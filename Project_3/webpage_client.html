@@ -135,6 +135,10 @@ function single() {
     
     sqs_data = JSON.parse(data.Messages[0].Body);
     console.log(sqs_data.id);
+    if (fahrenheit_flag == 1)
+    {
+      sqs_data.T = ((sqs_data.T * (9.0/5.0))+ 32);
+    }
     document.getElementById("single_terminal").value = "Temp: " + sqs_data.T + " Humidity: " + sqs_data.H + " Timestamp: " + sqs_data.Ti;
     var deleteParams = {
       QueueUrl: queueURL,
