@@ -1,8 +1,8 @@
-# EID-Project-2
+# EID-Project-3
   
 This project was completed under the course Embedded Interface Design at University of Colorado, Boulder under the guidance of Professor Bruce Montgomery in September 2019.
   
-## Authors: Siddhant Jajoo, Satya Mehta, Vatsal Sheth  
+## Authors: Vatsal Sheth  
 
 ## Installation Instructions 
  Run below commands to install all the libraries and dependancies to required for this project. 
@@ -42,7 +42,15 @@ This project was completed under the course Embedded Interface Design at Univers
 - nm init -y (in the working directory)
 This project is built on the project-1. The Tornado webscket code is added into the main application code but it is executed onto the different thread. Hence, it runs independently. 
 
+***AWS Python SDK Installation***
+- pip3 install AWSIoTPythonSDK
+
 ## Project Work
+
+***Project-3 Additions over Project-1, Project-2**
+
+ AWS IOT, AWS Lambda, AWS SNS, AWS SQS, AWS Cognito services are used to send Alert Email and update Temperature, Humidity and Timestamp info on HTML Web Client.
+-
 
 **Project-2 Additions over Project-1**
 
@@ -63,6 +71,13 @@ The GUI consists of pushbuttons with the following functionalities:
 -> Siddhant Jajoo - Pyqt5 work and Integration  
 -> Satya Mehta - Mysql, Matplotlib and Integration. 
 
+## Project3 Additions
+- AWS IOT to send data in form of JSON string to AWS cloud through MQTT Protocol.
+- Rule is set to trigger AWS Lambda function for each message received.
+- Lambda function decodes JSON string and uses AWS SNS sevice to send Alert Email or sends data to Queue on AWS SQS.
+- HTML web client on button press fetches either single data or all data from Queue and updates it on web page in tabular form. AWS java SDk is used for this.
+- Error conditions in case of Empty Queue, Sensor disconnect to send an Alert Email has been inmplemented.
+
 ## Project2 Additions
 Project 2 Additons - 1) HTML CLient website 2) NodeJs Server 3) Tornado Server.
 - Find the AWS development account in the folder.
@@ -78,16 +93,14 @@ Project 2 Additons - 1) HTML CLient website 2) NodeJs Server 3) Tornado Server.
 - Temperature Graph: This pushbutton fetches the last 10 temeperature values from the Tornado Webserver and creates a graph. 
 - Humidity Graph: This pushbutton fetches the last 10 humidity values from the Tornado Webserver and creates a graph.
 
-
--> Siddhant Jajoo - Node JS Web Socket, Integration  
--> Satya Mehta - Tornado Web Socket, Integration
--> Vatsal Sheth - Html webpage, Integration
-
 ## Project1 Additions
 - Conversion from Celsius to Fahrenheit and vice versa by clicking on the respective radio button.
 - Displaying Alarm text message as soon as the threshold is changed in addition to checking every 15 seconds and also at pressing      refresh button on the GUI.  
 
-
+## Issues Faced
+ - I faced issue in HTTP GET request in HTML to read message from AWS Simple Queue Services. Response of GET Request is in XML format and I faced issue in parsing XML to extract message body. So I used an Alternate Solution of AWS Java SDK in Browser Script.
+ - AWS requires authenticated access by default. As AWS Java SDK is used in browser script, I can't give credentials file as input. So, it is require in AWS to set unauthenticated access through AWS and that identity pool needs to be added in browser java script.
+ 
 ## References
 - https://github.com/adafruit/DHT-sensor-library - Adafruit library for DHT22 sensor.
 - https://pimylifeup.com/raspberry-pi-humidity-sensor-dht22/ - Adafruit Sensor Installation
@@ -96,3 +109,4 @@ Project 2 Additons - 1) HTML CLient website 2) NodeJs Server 3) Tornado Server.
 - https://os.mbed.com/cookbook/Websockets-Server - Python-Tornado-HTML example
 - http://www.tornadoweb.org/en/stable/
 - https://wiki.python.org/moin/WebServers - Many other choices, many levels of complexity:
+- https://docs.aws.amazon.com/iot/latest/developerguide/iot-gs.html 
