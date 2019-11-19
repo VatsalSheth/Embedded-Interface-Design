@@ -1,6 +1,10 @@
 from PyQt5 import QtCore, QtWidgets, uic
 import sys
 
+credential = {
+    "Vatsal" :  "12345"        
+}
+
 class MainWindow(QtWidgets.QMainWindow):
     
     def __init__(self):
@@ -22,9 +26,19 @@ class Login(QtWidgets.QWidget):
         uic.loadUi('Login.ui', self) # Load the .ui file
         self.button_login = self.findChild(QtWidgets.QPushButton, 'login_button') 
         self.button_login.clicked.connect(self.check_login)
+        self.login_mssg = self.findChild(QtWidgets.QLabel, 'login_mssg')
+        self.username = self.findChild(QtWidgets.QLineEdit, 'username')
+        self.password = self.findChild(QtWidgets.QLineEdit, 'password')
                 
     def check_login(self):
-        self.switch_window.emit()
+        name = self.username.text()
+        if name in credential:
+            if self.password.text() == credential[name]:
+                self.switch_window.emit()
+            else:
+               self.login_mssg.setText("Invalid Password") 
+        else:
+            self.login_mssg.setText("Invalid Username")
 
 class Controller:
     def __init__(self):
