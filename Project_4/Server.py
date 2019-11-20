@@ -1,9 +1,16 @@
 from PyQt5 import QtCore, QtWidgets, uic
 import sys
+import RPi.GPIO as GPIO
+from mfrc522 import SimpleMFRC522
+import time
 
 credential = {
     "Vatsal" :  "12345"        
 }
+
+credential_rfid = [160630884818]
+
+reader = SimpleMFRC522()
 
 class MainWindow(QtWidgets.QMainWindow):
     
@@ -26,10 +33,22 @@ class Login(QtWidgets.QWidget):
         uic.loadUi('Login.ui', self) # Load the .ui file
         self.button_login = self.findChild(QtWidgets.QPushButton, 'login_button') 
         self.button_login.clicked.connect(self.check_login)
+        self.button_rfid = self.findChild(QtWidgets.QPushButton, 'rfid_button') 
+        self.button_rfid.clicked.connect(self.check_rfid)
         self.login_mssg = self.findChild(QtWidgets.QLabel, 'login_mssg')
         self.username = self.findChild(QtWidgets.QLineEdit, 'username')
         self.password = self.findChild(QtWidgets.QLineEdit, 'password')
                 
+    def check_rfid(self):
+        try:
+                id, text = reader.read()
+                if id in credential_rfid:
+                    self.switch_window.emit()
+                else:
+                    self.login_mssg.setText("Invalid RFID")
+        finally:
+                GPIO.cleanup()
+        
     def check_login(self):
         name = self.username.text()
         if name in credential:
@@ -48,7 +67,7 @@ class Controller:
         self.login = Login()
         self.login.switch_window.connect(self.show_main)
         self.login.show()
-
+                
     def show_main(self):
         self.window = MainWindow()
         self.login.close()

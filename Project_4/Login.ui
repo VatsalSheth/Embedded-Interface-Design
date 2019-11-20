@@ -39,22 +39,6 @@
     <string>Username:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>260</y>
-     <width>91</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="text">
-    <string>RFID Login</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="login_button">
    <property name="geometry">
     <rect>
@@ -112,6 +96,19 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="rfid_button">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>250</y>
+     <width>99</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>RFID Login</string>
    </property>
   </widget>
  </widget>
