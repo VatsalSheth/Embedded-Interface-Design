@@ -1,8 +1,18 @@
 from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel
 import sys
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 import time
+import mysql.connector
+from datetime import datetime
+
+# Update Login credentials for db server before use
+USER="vatsal"
+PASWWD="12345"
+DATABASE="Magic_Wand"
+TABLE="Stats"
 
 credential = {
     "Vatsal" :  "12345"        
@@ -11,6 +21,33 @@ credential = {
 credential_rfid = [160630884818]
 
 reader = SimpleMFRC522()
+
+# Connect to db server 
+mydb = mysql.connector.connect(
+  host="localhost",
+  user=USER,
+  passwd=PASWWD, 
+  buffered=True
+)
+
+mycursor = mydb.cursor()
+
+# Create Database if not exists 
+mycursor.execute("CREATE DATABASE IF NOT EXISTS {}".format(DATABASE))
+  
+# Connect to db server on specific database  
+mydb = mysql.connector.connect(
+  host="localhost",
+  user=USER,
+  passwd=PASWWD,
+  database=DATABASE,
+  buffered=True
+)
+
+mycursor = mydb.cursor()
+
+# Create Table if not exists
+mycursor.execute("CREATE TABLE IF NOT EXISTS {} (Command CHAR(50), Status BOOL, time_stamp TIMESTAMP)".format(TABLE))
 
 class MainWindow(QtWidgets.QMainWindow):
     
@@ -38,7 +75,10 @@ class Login(QtWidgets.QWidget):
         self.login_mssg = self.findChild(QtWidgets.QLabel, 'login_mssg')
         self.username = self.findChild(QtWidgets.QLineEdit, 'username')
         self.password = self.findChild(QtWidgets.QLineEdit, 'password')
-                
+        self.Image = self.findChild(QtWidgets.QLabel, 'Image')
+        self.pixmap = QPixmap("./img.jpg")
+        self.Image.setPixmap(pixmap)
+
     def check_rfid(self):
         try:
                 id, text = reader.read()
