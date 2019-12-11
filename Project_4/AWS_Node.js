@@ -1,3 +1,12 @@
+/*******************************************************************************************************
+ * File Name: AWS_Node.js
+ * Description: This code implements AWS SQS reads and updates MySQL
+ * Date: 12/11/2019
+ * References: https://www.w3schools.com/
+ * 
+ * ****************************************************************************************************/
+
+
 var mysql = require('mysql');
 var AWS = require('aws-sdk');
 var util = require('util')
@@ -118,13 +127,13 @@ function sqs_receive()
             };
             
             //Deleting message from the queue.
-            /*sqs.deleteMessage(deleteParams, function(err, data) {
+            sqs.deleteMessage(deleteParams, function(err, data) {
               if (err) {
                 console.log("Delete Error", err);
               } else {
                 console.log("Message Deleted", data);
               }
-            });*/
+            });
           }
         }
          }); 
