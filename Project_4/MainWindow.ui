@@ -481,14 +481,30 @@
    <widget class="QLabel" name="Image">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>140</y>
-      <width>68</width>
-      <height>22</height>
+      <x>60</x>
+      <y>20</y>
+      <width>320</width>
+      <height>240</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="close">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>10</y>
+      <width>31</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>X</string>
     </property>
    </widget>
   </widget>
